@@ -47,6 +47,7 @@ class PrintService:
 
     def render_text_ticket(self, title: str, lines: List[str], add_datetime: bool = True) -> Image.Image:
         wrapped = []
+
         date_str = self._now_str() if add_datetime else None
         date_block_height = SIZE_BODY + 10 if date_str else 0
 
@@ -88,4 +89,3 @@ class PrintService:
         return base64.b64encode(buf.getvalue()).decode("ascii")
 
 print_service = PrintService()
-
