@@ -38,15 +38,17 @@ def issue_cookie(resp: Response):
         value=token,
         max_age=UI_REMEMBER_DAYS * 24 * 3600,
         httponly=True,
-        secure=True,
+        secure=True,       # Achtung: Nur HTTPS erlaubt, sonst auf False setzen für lokale Tests
         samesite="lax",
         path="/"
     )
 
 def ui_auth_state(request: Request, pass_: str | None, remember: bool) -> tuple[bool, bool]:
     if require_ui_auth(request):
+        # Bereits eingeloggt
         return True, False
     if pass_ is not None and pass_ == UI_PASS:
+        # Login erfolgreich
         return True, bool(remember)
+    # Nicht eingeloggt
     return False, False
-
