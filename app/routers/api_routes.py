@@ -2,7 +2,6 @@ from fastapi import APIRouter, Request, HTTPException, UploadFile, File
 from fastapi.responses import PlainTextResponse
 from PIL import Image
 import io
-
 from app.models.schemas import PrintPayload, RawPayload
 from app.services.print_service import print_service
 from app.services.mqtt_service import mqtt_service
@@ -73,4 +72,3 @@ async def api_print_image(request: Request, file: UploadFile = File(...)):
     log("API /api/print/image", {"orig_size": (w, h), "sent_width": PRINT_WIDTH_PX, "bytes": len(b64)})
     mqtt_service.publish_image(b64, cut_paper=1)
     return {"ok": True}
-
