@@ -5,11 +5,11 @@ from app.core.security import require_ui_auth, ui_auth_state, issue_cookie
 
 router = APIRouter()
 
-HTML_PAGE = \"\"\"<!DOCTYPE html>
-<html lang=\"de\">
+HTML_PAGE = """<!DOCTYPE html>
+<html lang="de">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Printer API - Web Interface</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
@@ -21,42 +21,42 @@ HTML_PAGE = \"\"\"<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <div class=\"container\">
+    <div class="container">
         <h1>🖨️ Printer API</h1>
         <p>Web-Interface für den Belegdrucker</p>
         
         <!-- Login Form -->
-        <div class=\"login-form\">
+        <div class="login-form">
             <h2>Login erforderlich</h2>
-            <form method=\"post\">
-                <input type=\"password\" name=\"password\" placeholder=\"Passwort\" required>
+            <form method="post">
+                <input type="password" name="password" placeholder="Passwort" required>
                 <label>
-                    <input type=\"checkbox\" name=\"remember\"> Angemeldet bleiben
+                    <input type="checkbox" name="remember"> Angemeldet bleiben
                 </label>
-                <button type=\"submit\">Anmelden</button>
+                <button type="submit">Anmelden</button>
             </form>
         </div>
         
         <!-- Print Form -->
-        <div id=\"print-interface\" style=\"display: none;\">
+        <div id="print-interface" style="display: none;">
             <h2>Text drucken</h2>
-            <form method=\"post\" action=\"/ui/print\">
-                <input type=\"text\" name=\"title\" placeholder=\"Titel\" value=\"AUFGABE\">
-                <textarea name=\"text\" rows=\"5\" placeholder=\"Text zum Drucken\"></textarea>
+            <form method="post" action="/ui/print">
+                <input type="text" name="title" placeholder="Titel" value="AUFGABE">
+                <textarea name="text" rows="5" placeholder="Text zum Drucken"></textarea>
                 <label>
-                    <input type=\"checkbox\" name=\"add_datetime\" checked> Datum/Zeit hinzufügen
+                    <input type="checkbox" name="add_datetime" checked> Datum/Zeit hinzufügen
                 </label>
                 <label>
-                    <input type=\"checkbox\" name=\"cut\" checked> Papier abschneiden
+                    <input type="checkbox" name="cut" checked> Papier abschneiden
                 </label>
-                <button type=\"submit\">Drucken</button>
+                <button type="submit">Drucken</button>
             </form>
         </div>
     </div>
     <script>
-        // UI-Logik um Login-Formular oder Druckformular anzuzeigen
+        // UI-Logik um Login oder Druckformular anzuzeigen
         const urlParams = new URLSearchParams(window.location.search);
-        const authed = 'session' in document.cookie;
+        const authed = document.cookie.includes('ui_token');
         if (!authed) {
             document.querySelector('.login-form').style.display = 'block';
             document.getElementById('print-interface').style.display = 'none';
@@ -66,7 +66,8 @@ HTML_PAGE = \"\"\"<!DOCTYPE html>
         }
     </script>
 </body>
-</html>\"\"\"
+</html>
+"""
 
 @router.get("/ui", response_class=HTMLResponse)
 @router.post("/ui", response_class=HTMLResponse)
@@ -85,6 +86,6 @@ async def web_ui(request: Request, password: Optional[str] = Form(None), remembe
 async def ui_print(request: Request, title: str = Form(""), text: str = Form(""), add_datetime: bool = Form(False), cut: bool = Form(True)):
     if not require_ui_auth(request):
         return RedirectResponse("/ui", status_code=302)
-    # Hier Drucklogik einfügen (ggf. Aufruf aus print_service)
+    # Hier kannst du noch die Drucklogik ergänzen, z.B. Aufruf der print_service.print(...)
+    # Aktuell nur Weiterleitung zurück zur UI
     return RedirectResponse("/ui?printed=1", status_code=302)
-
