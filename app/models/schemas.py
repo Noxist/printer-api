@@ -10,4 +10,3 @@ class PrintPayload(BaseModel):
 class RawPayload(BaseModel):
     text: str
     add_datetime: bool = False
-
