@@ -54,8 +54,6 @@ HTML_PAGE = """<!DOCTYPE html>
         </div>
     </div>
     <script>
-        // UI-Logik um Login oder Druckformular anzuzeigen
-        const urlParams = new URLSearchParams(window.location.search);
         const authed = document.cookie.includes('ui_token');
         if (!authed) {
             document.querySelector('.login-form').style.display = 'block';
@@ -72,10 +70,8 @@ HTML_PAGE = """<!DOCTYPE html>
 @router.get("/ui", response_class=HTMLResponse)
 async def web_ui_get(request: Request):
     if require_ui_auth(request):
-        # Eingeloggt: Druckformular anzeigen!
         return HTMLResponse(HTML_PAGE.replace('style="display: none;"', ''))
     else:
-        # Nicht eingeloggt: Login anzeigen!
         return HTMLResponse(HTML_PAGE)
 
 @router.post("/ui")
@@ -87,5 +83,11 @@ async def web_ui_post(request: Request, password: Optional[str] = Form(None), re
             issue_cookie(resp)
         return resp
     else:
-        # Falsches Passwort bleibt beim Login!
         return HTMLResponse(HTML_PAGE)
+
+@router.post("/ui/print")
+async def ui_print(request: Request, title: str = Form(""), text: str = Form(""), add_datetime: bool = Form(False), cut: bool = Form(True)):
+    if not require_ui_auth(request):
+        return RedirectResponse("/ui", status_code=302)
+    # Noch Drucklogik einfügen
+    return RedirectResponse("/ui?printed=1", status_code=302)
