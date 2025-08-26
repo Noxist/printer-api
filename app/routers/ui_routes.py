@@ -70,12 +70,12 @@ HTML_PAGE = """<!DOCTYPE html>
 """
 
 @router.get("/ui", response_class=HTMLResponse)
-@router.post("/ui", response_class=HTMLResponse)
+@router.post("/ui")
 async def web_ui(request: Request, password: Optional[str] = Form(None), remember: bool = Form(False)):
     authed, should_set_cookie = ui_auth_state(request, password, remember)
 
     if authed:
-        resp = HTMLResponse(HTML_PAGE.replace('style="display: none;"', ''))
+        resp = RedirectResponse(url="/ui", status_code=303)
         if should_set_cookie:
             issue_cookie(resp)
         return resp
@@ -86,6 +86,5 @@ async def web_ui(request: Request, password: Optional[str] = Form(None), remembe
 async def ui_print(request: Request, title: str = Form(""), text: str = Form(""), add_datetime: bool = Form(False), cut: bool = Form(True)):
     if not require_ui_auth(request):
         return RedirectResponse("/ui", status_code=302)
-    # Hier kannst du noch die Drucklogik ergänzen, z.B. Aufruf der print_service.print(...)
-    # Aktuell nur Weiterleitung zurück zur UI
+    # Hier Drucklogik ergänzen, wenn gewünscht
     return RedirectResponse("/ui?printed=1", status_code=302)
