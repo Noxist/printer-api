@@ -89,5 +89,5 @@ async def web_ui_post(request: Request, password: Optional[str] = Form(None), re
 async def ui_print(request: Request, title: str = Form(""), text: str = Form(""), add_datetime: bool = Form(False), cut: bool = Form(True)):
     if not require_ui_auth(request):
         return RedirectResponse("/ui", status_code=302)
-    # Noch Drucklogik einfügen
+    # Drucklogik nach Bedarf einfügen
     return RedirectResponse("/ui?printed=1", status_code=302)
