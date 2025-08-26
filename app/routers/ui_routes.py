@@ -70,21 +70,22 @@ HTML_PAGE = """<!DOCTYPE html>
 """
 
 @router.get("/ui", response_class=HTMLResponse)
-@router.post("/ui")
-async def web_ui(request: Request, password: Optional[str] = Form(None), remember: bool = Form(False)):
-    authed, should_set_cookie = ui_auth_state(request, password, remember)
+async def web_ui_get(request: Request):
+    if require_ui_auth(request):
+        # Eingeloggt: Druckformular anzeigen!
+        return HTMLResponse(HTML_PAGE.replace('style="display: none;"', ''))
+    else:
+        # Nicht eingeloggt: Login anzeigen!
+        return HTMLResponse(HTML_PAGE)
 
+@router.post("/ui")
+async def web_ui_post(request: Request, password: Optional[str] = Form(None), remember: bool = Form(False)):
+    authed, should_set_cookie = ui_auth_state(request, password, remember)
     if authed:
-        resp = RedirectResponse(url="/ui", status_code=303)
+        resp = RedirectResponse("/ui", status_code=303)
         if should_set_cookie:
             issue_cookie(resp)
         return resp
     else:
+        # Falsches Passwort bleibt beim Login!
         return HTMLResponse(HTML_PAGE)
-
-@router.post("/ui/print")
-async def ui_print(request: Request, title: str = Form(""), text: str = Form(""), add_datetime: bool = Form(False), cut: bool = Form(True)):
-    if not require_ui_auth(request):
-        return RedirectResponse("/ui", status_code=302)
-    # Hier Drucklogik ergänzen, wenn gewünscht
-    return RedirectResponse("/ui?printed=1", status_code=302)
