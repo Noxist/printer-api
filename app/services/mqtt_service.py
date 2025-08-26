@@ -40,4 +40,3 @@ class MQTTService:
             raise
 
 mqtt_service = MQTTService()
-
